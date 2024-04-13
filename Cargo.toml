@@ -6,7 +6,6 @@ authors = ["Teia Leusten <teia.leusten@proton.me>"]
 description = "A simple command line tool for cryptography and cryptanalysis"
 
 [dependencies]
-clap = { version = "4.5", features = ["derive"] }
-
-[dev-dependencies]
-pretty_assertions = "1.4"
+text_io = "0.1.12"
+clap = { version = "4.5.4", features = ["derive"] }
+modicum = "0.1.0"

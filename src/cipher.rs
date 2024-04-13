@@ -1,6 +1,6 @@
-mod caesar;
+mod shift;
 
-pub use caesar::Caesar;
+pub use shift::Shift;
 
 pub trait Encrypt<C> {
     type Output;

@@ -1,26 +1,29 @@
 use crate::Encrypt;
+use modicum::*;
 
-pub struct Caesar {
+const ALPHABET_SIZE: usize = 26;
+
+pub struct Shift {
     shift: i8,
 }
 
-impl Caesar {
+impl Shift {
     pub fn new(shift: i8) -> Self {
         Self { shift }
     }
 }
 
-impl Encrypt<Caesar> for String {
+impl Encrypt<Shift> for String {
     type Output = String;
-    fn encrypt_with(&self, cipher: Caesar) -> Self::Output {
+    fn encrypt_with(&self, cipher: Shift) -> Self::Output {
         let shift = cipher.shift;
         self.chars()
             .map(|c| {
                 if c.is_ascii_alphabetic() {
-                    let index = if c.is_ascii_lowercase() { b'a' } else { b'A' };
-                    let offset = c as i8 - index as i8;
-                    let shifted = (offset + shift) % 26;
-                    (index + shifted as u8) as char
+                    let base = if c.is_ascii_lowercase() { b'a' } else { b'A' };
+                    let offset = c as i8 - base as i8;
+                    let shifted = offset.add_mod(shift, ALPHABET_SIZE);
+                    (base + shifted as u8) as char
                 } else {
                     c
                 }
@@ -29,9 +32,9 @@ impl Encrypt<Caesar> for String {
     }
 }
 
-impl Encrypt<Caesar> for &str {
+impl Encrypt<Shift> for &str {
     type Output = String;
-    fn encrypt_with(&self, cipher: Caesar) -> String {
+    fn encrypt_with(&self, cipher: Shift) -> String {
         self.to_string().encrypt_with(cipher)
     }
 }
@@ -39,12 +42,11 @@ impl Encrypt<Caesar> for &str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn encrypt_positive_shift() {
         let plaintext = "Hello, World!";
-        let cipher = Caesar::new(3);
+        let cipher = Shift::new(3);
         let ciphertext = plaintext.encrypt_with(cipher);
         assert_eq!(ciphertext, "Khoor, Zruog!");
     }
@@ -52,7 +54,7 @@ mod tests {
     #[test]
     fn encrypt_negative_shift() {
         let plaintext = "Hello, World!";
-        let cipher = Caesar::new(-3);
+        let cipher = Shift::new(-3);
         let ciphertext = plaintext.encrypt_with(cipher);
         assert_eq!(ciphertext, "Ebiil, Tloia!");
     }
