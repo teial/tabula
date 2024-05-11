@@ -1,7 +1,7 @@
 use text_io::read;
 
 use clap::{Args, Parser, Subcommand};
-use tabula::{Encrypt, Shift};
+use tabula::Shift;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -50,7 +50,7 @@ fn main() {
                 let input = args
                     .input
                     .map_or_else(|| read!("{}\n"), |filename| std::fs::read_to_string(filename).unwrap());
-                let output = input.encrypt_with(cipher);
+                let output = tabula::encrypt(&input, cipher);
                 println!("{output}");
             }
             _ => todo!(),
